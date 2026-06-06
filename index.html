@@ -8,6 +8,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&family=Sora:wght@300;400;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css">
+  <link rel="icon" type="image/svg+xml" href="icon.svg">
 </head>
 <body>
   <!-- Mobile top bar -->
@@ -16,7 +17,9 @@
       <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
     </button>
     <div class="brand-mobile">
-      <span class="brand-icon-sm">SS</span>
+      <span class="brand-icon-sm" style="background:none;padding:0;overflow:hidden;">
+          <img src="icon.svg" width="28" height="28" style="display:block;border-radius:5px;" alt="SS">
+        </span>
       <span class="brand-title-sm">Semester Survival</span>
     </div>
     <button class="theme-toggle-sm" onclick="toggleTheme()">
@@ -33,7 +36,9 @@
     <aside class="sidebar" id="sidebar">
       <div class="sidebar-top">
         <div class="brand">
-          <div class="brand-icon">SS</div>
+          <div class="brand-icon" style="background:none;padding:0;overflow:hidden;">
+            <img src="icon.svg" width="34" height="34" style="display:block;border-radius:6px;" alt="SS">
+          </div>
           <div class="brand-text">
             <span class="brand-title">Semester Survival</span>
             <span class="brand-sub">by Jawad</span>
