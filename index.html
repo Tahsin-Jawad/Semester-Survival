@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Semester Survival — by Jawad</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&family=Sora:wght@300;400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="app-wrapper">
+    <!-- Sidebar -->
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-top">
+        <div class="brand">
+          <div class="brand-icon">SS</div>
+          <div class="brand-text">
+            <span class="brand-title">Semester Survival</span>
+            <span class="brand-sub">by Jawad</span>
+          </div>
+        </div>
+      </div>
+
+      <nav class="nav-menu">
+        <a class="nav-item active" data-page="dashboard" onclick="navigate('dashboard', this)">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
+          Dashboard
+        </a>
+        <a class="nav-item" data-page="courses" onclick="navigate('courses', this)">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+          Courses
+        </a>
+        <a class="nav-item" data-page="assignments" onclick="navigate('assignments', this)">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+          Assignments
+        </a>
+        <a class="nav-item" data-page="exams" onclick="navigate('exams', this)">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+          Exams
+        </a>
+        <a class="nav-item" data-page="timer" onclick="navigate('timer', this)">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="13" r="8"/><path d="M12 9v4l2 2"/><path d="M9 2h6"/><path d="M12 2v3"/></svg>
+          Focus Timer
+        </a>
+        <a class="nav-item nav-survival" data-page="survival" onclick="navigate('survival', this)">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+          Survival Mode
+          <span class="survival-badge" id="collision-badge" style="display:none">!</span>
+        </a>
+      </nav>
+
+      <div class="sidebar-bottom">
+        <button class="theme-toggle" id="themeToggle" onclick="toggleTheme()">
+          <svg class="icon-sun" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
+          <svg class="icon-moon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+          <span class="theme-label">Light mode</span>
+        </button>
+      </div>
+    </aside>
+
+    <!-- Main content -->
+    <main class="main-content">
+
+      <!-- DASHBOARD -->
+      <section id="page-dashboard" class="page active">
+        <div class="hero-block">
+          <div class="quote-rotator">
+            <p class="quote-text" id="quote-text">Discipline today, success tomorrow.</p>
+          </div>
+          <p class="hero-sub">Stay focused and win your semester.</p>
+        </div>
+
+        <div id="collision-banner"></div>
+
+        <div class="metrics-row" id="dash-metrics"></div>
+
+        <div class="two-col">
+          <div class="card">
+            <div class="card-header">
+              <span class="card-title">Upcoming deadlines</span>
+            </div>
+            <div id="dash-deadlines"></div>
+          </div>
+          <div class="card">
+            <div class="card-header">
+              <span class="card-title">Exam countdown</span>
+            </div>
+            <div id="dash-exam-list"></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- COURSES -->
+      <section id="page-courses" class="page">
+        <div class="page-top">
+          <div>
+            <h2 class="page-title">Courses</h2>
+            <p class="page-desc">Track your syllabus completion.</p>
+          </div>
+          <button class="btn-primary" onclick="openModal('modal-course')">+ Add course</button>
+        </div>
+        <div id="courses-list"></div>
+      </section>
+
+      <!-- ASSIGNMENTS -->
+      <section id="page-assignments" class="page">
+        <div class="page-top">
+          <div>
+            <h2 class="page-title">Assignments</h2>
+            <p class="page-desc">Never miss a deadline.</p>
+          </div>
+          <button class="btn-primary" onclick="openModal('modal-assign')">+ Add assignment</button>
+        </div>
+        <div id="assignments-list"></div>
+      </section>
+
+      <!-- EXAMS -->
+      <section id="page-exams" class="page">
+        <div class="page-top">
+          <div>
+            <h2 class="page-title">Exams</h2>
+            <p class="page-desc">Countdown to every exam.</p>
+          </div>
+          <button class="btn-primary" onclick="openModal('modal-exam')">+ Add exam</button>
+        </div>
+        <div id="exams-list"></div>
+      </section>
+
+      <!-- FOCUS TIMER -->
+      <section id="page-timer" class="page">
+        <div class="page-top">
+          <div>
+            <h2 class="page-title">Focus Timer</h2>
+            <p class="page-desc">Deep work, tracked.</p>
+          </div>
+        </div>
+        <div id="timer-root"></div>
+      </section>
+
+      <!-- SURVIVAL MODE -->
+      <section id="page-survival" class="page">
+        <div class="page-top">
+          <div>
+            <h2 class="page-title survival-title">Exam Survival Mode</h2>
+            <p class="page-desc">Smart plan when exams collide.</p>
+          </div>
+          <button class="btn-primary" onclick="openModal('modal-survival-add')">+ Add exam</button>
+        </div>
+        <div id="survival-root"></div>
+      </section>
+
+    </main>
+  </div>
+
+  <!-- MODALS -->
+  <div class="modal-overlay" id="modal-course" onclick="closeModalOut(event,'modal-course')">
+    <div class="modal">
+      <div class="modal-header"><span class="modal-title">Add course</span><button class="modal-close" onclick="closeModal('modal-course')">✕</button></div>
+      <div class="form-group"><label>Course code</label><input class="input" id="c-code" placeholder="e.g. CSE110"></div>
+      <div class="form-group"><label>Course name</label><input class="input" id="c-name" placeholder="e.g. Intro to Programming"></div>
+      <div class="form-group"><label>Progress (%)</label><input type="number" class="input" id="c-prog" placeholder="0" min="0" max="100"></div>
+      <div class="modal-footer">
+        <button class="btn-ghost" onclick="closeModal('modal-course')">Cancel</button>
+        <button class="btn-primary" onclick="addCourse()">Add course</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal-overlay" id="modal-assign" onclick="closeModalOut(event,'modal-assign')">
+    <div class="modal">
+      <div class="modal-header"><span class="modal-title">Add assignment</span><button class="modal-close" onclick="closeModal('modal-assign')">✕</button></div>
+      <div class="form-group"><label>Title</label><input class="input" id="a-title" placeholder="Assignment title"></div>
+      <div class="form-group"><label>Course</label><input class="input" id="a-course" placeholder="e.g. CSE110"></div>
+      <div class="form-group"><label>Deadline</label><input type="date" class="input" id="a-deadline"></div>
+      <div class="form-group"><label>Status</label>
+        <select class="input" id="a-status">
+          <option value="Pending">Pending</option>
+          <option value="In Progress">In Progress</option>
+          <option value="Completed">Completed</option>
+        </select>
+      </div>
+      <div class="modal-footer">
+        <button class="btn-ghost" onclick="closeModal('modal-assign')">Cancel</button>
+        <button class="btn-primary" onclick="addAssignment()">Add assignment</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal-overlay" id="modal-exam" onclick="closeModalOut(event,'modal-exam')">
+    <div class="modal">
+      <div class="modal-header"><span class="modal-title">Add exam</span><button class="modal-close" onclick="closeModal('modal-exam')">✕</button></div>
+      <div class="form-group"><label>Exam name</label><input class="input" id="e-name" placeholder="e.g. Physics Midterm"></div>
+      <div class="form-group"><label>Course</label><input class="input" id="e-course" placeholder="e.g. PHY109"></div>
+      <div class="form-group"><label>Date</label><input type="date" class="input" id="e-date"></div>
+      <div class="form-group"><label>Type</label>
+        <select class="input" id="e-type">
+          <option value="Quiz">Quiz</option>
+          <option value="Mid">Midterm</option>
+          <option value="Final">Final</option>
+          <option value="Lab">Lab</option>
+        </select>
+      </div>
+      <div class="modal-footer">
+        <button class="btn-ghost" onclick="closeModal('modal-exam')">Cancel</button>
+        <button class="btn-primary" onclick="addExam()">Add exam</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal-overlay" id="modal-survival-add" onclick="closeModalOut(event,'modal-survival-add')">
+    <div class="modal">
+      <div class="modal-header"><span class="modal-title">Add to Survival Mode</span><button class="modal-close" onclick="closeModal('modal-survival-add')">✕</button></div>
+      <div class="form-group"><label>Exam name</label><input class="input" id="s-name" placeholder="e.g. Physics Quiz"></div>
+      <div class="form-group"><label>Date</label><input type="date" class="input" id="s-date"></div>
+      <div class="form-group"><label>Topics (comma separated)</label><input class="input" id="s-topics" placeholder="Wave Motion, Optics, Thermodynamics"></div>
+      <div class="form-group"><label>Difficulty</label>
+        <select class="input" id="s-diff">
+          <option value="Easy">Easy</option>
+          <option value="Medium" selected>Medium</option>
+          <option value="Hard">Hard</option>
+        </select>
+      </div>
+      <div class="modal-footer">
+        <button class="btn-ghost" onclick="closeModal('modal-survival-add')">Cancel</button>
+        <button class="btn-primary" onclick="addSurvivalExam()">Add exam</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+  <script src="timer.js"></script>
+  <script src="survival.js"></script>
+</body>
+</html>
