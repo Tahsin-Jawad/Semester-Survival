@@ -1,7 +1,7 @@
 // ============================================================
-// SEMESTER SURVIVAL — app.js (Complete Rewrite)
+// SEMESTER SURVIVAL — app.js (Complete Rewrite + Smart Planner patch)
 // All-in-one: Dashboard, Courses, Assignments, Exams,
-// Focus Timer, Survival Mode, Daily Planner
+// Focus Timer, Survival Mode, Daily Planner, Smart Planner
 // ============================================================
 
 // ===== STATE =====
@@ -105,13 +105,14 @@ function navigate(page, el) {
 }
 
 function renderPage(page) {
-  if (page === 'dashboard')   renderDashboard();
-  if (page === 'courses')     renderCourses();
-  if (page === 'assignments') renderAssignments();
-  if (page === 'exams')       renderExams();
-  if (page === 'timer')       renderTimer();
-  if (page === 'survival')    renderSurvival();
-  if (page === 'planner')     renderPlanner();
+  if (page === 'dashboard')    renderDashboard();
+  if (page === 'courses')      renderCourses();
+  if (page === 'assignments')  renderAssignments();
+  if (page === 'exams')        renderExams();
+  if (page === 'timer')        renderTimer();
+  if (page === 'survival')     renderSurvival();
+  if (page === 'planner')      renderPlanner();
+  if (page === 'smartplanner') renderSmartPlanner(); // ← SMART PLANNER
 }
 
 // ===== MODALS =====
@@ -119,11 +120,12 @@ function openModal(id) {
   var el = document.getElementById(id);
   if (!el) return;
   el.classList.add('open');
-  // Populate course dropdowns whenever a modal opens
   if (id === 'modal-assign')       populateCourseDropdown('a-course-sel', 'a-course-manual');
   if (id === 'modal-exam')         populateCourseDropdown('e-course-sel', 'e-course-manual');
   if (id === 'modal-survival-add') populateCourseDropdown('s-course-sel', 's-course-manual');
   if (id === 'modal-planner-add')  populateCourseDropdown('p-course-sel', 'p-course-manual');
+  // Routine modal needs to render its content
+  if (id === 'sp-modal-routine')   renderRoutineModal();
 }
 
 function closeModal(id) {
@@ -141,7 +143,6 @@ function populateCourseDropdown(selId, manualId) {
   if (!sel) return;
   sel.innerHTML = '';
 
-  // Blank / none option
   var blank = document.createElement('option');
   blank.value = '';
   blank.textContent = state.courses.length ? '— Select course —' : '— No courses added yet —';
@@ -154,13 +155,11 @@ function populateCourseDropdown(selId, manualId) {
     sel.appendChild(opt);
   });
 
-  // Add new option
   var addOpt = document.createElement('option');
   addOpt.value = '__new__';
   addOpt.textContent = '+ Type manually…';
   sel.appendChild(addOpt);
 
-  // Reset manual input visibility
   var manual = document.getElementById(manualId);
   if (manual) manual.style.display = 'none';
 }
@@ -224,7 +223,6 @@ function renderDashboard() {
       metricCard(exSoon,               'Exams soon');
   }
 
-  // Deadlines
   var deadlines = state.assignments
     .filter(function(a) { return a.status !== 'Completed'; })
     .sort(function(a, b) { return new Date(a.deadline) - new Date(b.deadline); })
@@ -245,7 +243,6 @@ function renderDashboard() {
     }
   }
 
-  // Exams
   var upEx = state.exams
     .filter(function(e) { return daysLeft(e.date) >= 0; })
     .sort(function(a, b) { return new Date(a.date) - new Date(b.date); })
@@ -264,7 +261,6 @@ function renderDashboard() {
     }
   }
 
-  // Collision banner
   var collision = checkCollision();
   var banner    = document.getElementById('collision-banner');
   var badgeEl   = document.getElementById('collision-badge');
@@ -446,27 +442,37 @@ function renderExams() {
 }
 
 // ===== FOCUS TIMER =====
+// PATCH: added 'custom' to durations for Smart Planner integration
 var timerState = {
-  mode:      'focus',    // 'focus' | 'short' | 'long'
-  durations: { focus: 25 * 60, short: 5 * 60, long: 15 * 60 },
+  mode:      'focus',
+  durations: { focus: 25 * 60, short: 5 * 60, long: 15 * 60, custom: 25 * 60 },
   remaining: 25 * 60,
   running:   false,
   interval:  null,
+  _spTask:   null, // set by smart planner when launching focus
 };
 
 function renderTimer() {
   var root = document.getElementById('timer-root');
   if (!root) return;
+
+  // Show task label if launched from Smart Planner
+  var taskLabel = timerState._spTask
+    ? '<div style="font-size:11px;color:var(--accent);font-family:var(--font-mono);margin-bottom:0.75rem;letter-spacing:0.3px">📌 ' + timerState._spTask + '</div>'
+    : '';
+
   root.innerHTML =
     '<div class="timer-wrapper">' +
       '<div class="timer-modes">' +
         '<button class="timer-mode-btn' + (timerState.mode === 'focus' ? ' active' : '') + '" onclick="setTimerMode(\'focus\')">Focus 25m</button>' +
         '<button class="timer-mode-btn' + (timerState.mode === 'short' ? ' active' : '') + '" onclick="setTimerMode(\'short\')">Short Break 5m</button>' +
         '<button class="timer-mode-btn' + (timerState.mode === 'long'  ? ' active' : '') + '" onclick="setTimerMode(\'long\')">Long Break 15m</button>' +
+        (timerState.mode === 'custom' ? '<button class="timer-mode-btn active" style="max-width:160px;overflow:hidden;text-overflow:ellipsis">Custom</button>' : '') +
       '</div>' +
       '<div class="timer-face">' +
+        taskLabel +
         '<div class="timer-display" id="timer-display">' + formatTime(timerState.remaining) + '</div>' +
-        '<div class="timer-msg" id="timer-msg">Ready to focus?</div>' +
+        '<div class="timer-msg" id="timer-msg">' + (timerState._spTask ? 'Smart Planner session ready.' : 'Ready to focus?') + '</div>' +
         '<div class="timer-controls">' +
           '<button class="btn-primary" id="timer-start-btn" onclick="timerStartPause()">' + (timerState.running ? 'Pause' : 'Start') + '</button>' +
           '<button class="btn-ghost" onclick="timerReset()">Reset</button>' +
@@ -480,10 +486,10 @@ function renderTimer() {
 }
 
 function setTimerMode(mode) {
-  // Don't switch if running
   if (timerState.running) timerStop();
   timerState.mode      = mode;
   timerState.remaining = timerState.durations[mode];
+  timerState._spTask   = null; // clear smart planner task on manual mode switch
   renderTimer();
 }
 
@@ -517,7 +523,9 @@ function timerStart() {
   var msg = document.getElementById('timer-msg');
   if (msg) {
     msg.className = 'timer-msg';
-    msg.textContent = timerState.mode === 'focus' ? 'Stay focused. You\'ve got this.' : 'Take a breather!';
+    msg.textContent = timerState._spTask
+      ? 'Focusing on: ' + timerState._spTask
+      : (timerState.mode === 'focus' ? 'Stay focused. You\'ve got this.' : 'Take a breather!');
   }
   updateTimerUI();
 
@@ -527,7 +535,7 @@ function timerStart() {
       updateTimerUI();
     } else {
       timerStop();
-      if (timerState.mode === 'focus') {
+      if (timerState.mode === 'focus' || timerState.mode === 'custom') {
         state.sessions++;
         save();
         var sc = document.getElementById('sessions-count');
@@ -536,7 +544,9 @@ function timerStart() {
       var msgEl = document.getElementById('timer-msg');
       if (msgEl) {
         msgEl.className = 'timer-msg success';
-        msgEl.textContent = timerState.mode === 'focus' ? '🎉 Session complete! Take a break.' : '✓ Break over. Ready to focus again?';
+        msgEl.textContent = (timerState.mode === 'focus' || timerState.mode === 'custom')
+          ? '🎉 Session complete! Take a break.'
+          : '✓ Break over. Ready to focus again?';
       }
     }
   }, 1000);
@@ -579,7 +589,6 @@ function addSurvivalExam() {
   save();
   closeModal('modal-survival-add');
 
-  // Reset fields
   document.getElementById('s-name').value   = '';
   document.getElementById('s-date').value   = '';
   document.getElementById('s-topics').value = '';
@@ -610,10 +619,8 @@ function renderSurvival() {
     return;
   }
 
-  // Sort by date
   var sorted = state.survivalExams.slice().sort(function(a, b) { return new Date(a.date) - new Date(b.date); });
 
-  // Calculate stress
   var totalTopics   = sorted.reduce(function(s, e) { return s + e.topics.length; }, 0);
   var doneTopics    = sorted.reduce(function(s, e) { return s + e.topics.filter(function(t) { return t.done; }).length; }, 0);
   var examsIn5Days  = sorted.filter(function(e) { var d = daysLeft(e.date); return d >= 0 && d <= 5; }).length;
@@ -683,7 +690,6 @@ function renderPlanner() {
   var today = new Date().toLocaleDateString('en-GB', { weekday: 'long', day: '2-digit', month: 'long', year: 'numeric' });
   if (dateLabel) dateLabel.textContent = today;
 
-  // Filter today's tasks (stored with date key)
   var todayKey  = new Date().toISOString().slice(0, 10);
   var todayTasks = state.plannerTasks.filter(function(t) { return t.date === todayKey; });
   var pastTasks  = state.plannerTasks.filter(function(t) { return t.date !== todayKey; });
@@ -731,7 +737,6 @@ function renderPlanner() {
     html += '</div>';
   }
 
-  // Past tasks (collapsed summary)
   if (pastTasks.length) {
     var byDate = {};
     pastTasks.forEach(function(t) {
@@ -784,7 +789,7 @@ function deletePlannerTask(id) {
   renderPlanner();
 }
 
-// ===== GLOBAL FUNCTION EXPORTS (ensure window scope) =====
+// ===== GLOBAL FUNCTION EXPORTS =====
 window.navigate           = navigate;
 window.openModal          = openModal;
 window.closeModal         = closeModal;
